@@ -31,7 +31,10 @@ public class WordCounter {
     }
     public int incrementWordCount(String word) {
         int hashCode = word.hashCode();
-        return 0; // FIXME - return the updated word count for this word
+        hashTable[hashCode] = new Bucket(word);
+        hashTable[hashCode].count++;
+        return hashTable[hashCode].count;
+        // FIXME - return the updated word count for this word
     }
     public int getWordCount(String word) {
         int hashCode = word.hashCode();
@@ -47,11 +50,11 @@ public class WordCounter {
         public int count;
         public Bucket next;
 
-        public Bucket(String word, int count, Bucket next) {
+        public Bucket(String word) {
             this.word = word;
-            this.count = count;
-            if (next != null)
-                this.next = new Bucket(word, count, next);
+            this.count = 1;
+            // if (next != null)
+            //     this.next = new Bucket(word, count, next);
         }
     }
 }
