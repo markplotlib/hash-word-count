@@ -29,7 +29,7 @@ public class WordCounter {
         return 0; // FIXME
     }
     public boolean isEmpty() {
-        return size == 0;
+        return totalWordCount == 0;
     }
     public int incrementWordCount(String word) {
         int hashCode = word.hashCode();
