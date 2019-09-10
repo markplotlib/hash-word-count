@@ -8,13 +8,15 @@ public class WordCounter {
 
 	// experimenting
 	private Bucket[] hashTable;
-	private int size;
-	private int capacity;
+    private int capacity;
+	private int uniqueWordCount;
+	private int totalWordCount;
 
     public WordCounter(int capacity) {
         this.capacity = capacity;
         hashTable = new Bucket[capacity];
-        size = 0;
+        uniqueWordCount = 0;
+        totalWordCount = 0;
     }
 
     public int getCapacity() {
@@ -47,11 +49,10 @@ public class WordCounter {
         public int count;
         public Bucket next;
 
-        public Bucket(String word, int count, Bucket next) {
+        public Bucket(String word) {
             this.word = word;
-            this.count = count;
-            if (next != null)
-                this.next = new Bucket(word, count, next);
+            this.count = 1;
+            this.next = null;
         }
     }
 }
