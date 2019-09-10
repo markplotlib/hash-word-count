@@ -22,12 +22,15 @@ public class WordCounter {
     public int getCapacity() {
         return capacity;
     }
+
     public int getUniqueWordCount() {
-        return 0; // FIXME
+        return uniqueWordCount;
     }
+
     public int getTotalWordCount() {
-        return 0; // FIXME
+        return totalWordCount;
     }
+
     public boolean isEmpty() {
         return totalWordCount == 0;
     }
