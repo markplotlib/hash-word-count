@@ -8,13 +8,15 @@ public class WordCounter {
 
 	// experimenting
 	private Bucket[] hashTable;
-	private int size;
-	private int capacity;
+    private int capacity;
+	private int uniqueWordCount;
+	private int totalWordCount;
 
     public WordCounter(int capacity) {
         this.capacity = capacity;
         hashTable = new Bucket[capacity];
-        size = 0;
+        uniqueWordCount = 0;
+        totalWordCount = 0;
     }
 
     public int getCapacity() {
@@ -27,7 +29,7 @@ public class WordCounter {
         return 0; // FIXME
     }
     public boolean isEmpty() {
-        return size == 0;
+        return totalWordCount == 0;
     }
     public int incrementWordCount(String word) {
         int hashCode = word.hashCode();
