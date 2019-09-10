@@ -41,24 +41,24 @@ public class WordCounter {
         return hashTable[hashCode].count;
         // FIXME - return the updated word count for this word
     }
+    /**
+     * return the current word count for this word
+     * @param word string entered by user
+     * @return   the current word count for this word (0 if empty)
+     */
     public int getWordCount(String word) {
         int hashCode = word.hashCode();
-        if (hashTable.contains(key)) {
-            // When the word already exists in the hash table, increment the word count.
-
-        } else {
-            // Adds a word to the hash table if it was not previously seen (initial count of 1)
-
-        }
-
-        	// Returns word count (will always be greater than or equal to 1)
-
-        hashTable[hashCode];
-
-        return 0; // FIXME - return the current word count for this word
+        hashCode = hashCode % capacity;  // asserts: hashCode < capacity
+        if (hashCode < 0)
+            hashCode += capacity;       // asserts: hashCode > 0
+        return hashTable[hashCode].count;
     }
     public void removeWord(String word) {
         int hashCode = word.hashCode();
+        hashCode = hashCode % capacity;  // asserts: hashCode < capacity
+        if (hashCode < 0)
+            hashCode += capacity;       // asserts: hashCode > 0
+//        hashTable[hashCode];
         // FIXME - remove word from hash table
     }
 
