@@ -34,15 +34,27 @@ public class WordCounter {
     public boolean isEmpty() {
         return totalWordCount == 0;
     }
+    
+    /**
+     * Creates a new bucket for new (unique) words, 
+     * otherwise increases word count if it's already in hash table.
+     * @param word  label of bucket
+     * @return  the updated word count for this word
+     */
     public int incrementWordCount(String word) {
         int hashCode = word.hashCode();
-
-// if
-        hashTable[hashCode] = new Bucket(word);
-// else
-        hashTable[hashCode].count++;
+        hashCode = hashCode % capacity;  // asserts: hashCode < capacity
+        if (hashCode < 0)
+            hashCode += capacity;       // asserts: hashCode > 0
+        if (hashTable[hashCode] != null) {
+            // if the word IS found in hash table
+            hashTable[hashCode].count++;        	
+        } else {
+            // if NOT found, then create new bucket for this word.
+            Bucket bucket = new Bucket(word);
+            hashTable[hashCode] = bucket;        	
+        }
         return hashTable[hashCode].count;
-        // FIXME - return the updated word count for this word
     }
     /**
      * return the current word count for this word
