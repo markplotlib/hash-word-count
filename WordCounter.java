@@ -71,12 +71,11 @@ public class WordCounter {
 
         totalWordCount++;   // This is incremented unconditionally
 
-        Bucket bucket = hashTable[hashCode];
         // if hash table bucket is null,
         // then definitively that word is NOT present.
         // so then CREATE BRAND NEW BUCKET for this word.
-        if (bucket == null) {
-            bucket = new Bucket(word);
+        if (hashTable[hashCode] == null) {
+            hashTable[hashCode] = new Bucket(word);
             uniqueWordCount++;  // increase count for a new word bucket
             return hashTable[hashCode].count;
 
@@ -86,21 +85,21 @@ public class WordCounter {
             // traverse the chain in search of the word
             // whereby we increment total word count AND that word's count.
             // Does not insert new nodes when word already exists in HashTable.
-            while (bucket != null) {
-                if (bucket.word.equals(word)) {  // word IS found!
-                    return bucket.count++;
+            while (hashTable[hashCode] != null) {
+                if (hashTable[hashCode].word.equals(word)) {  // word IS found!
+                    return hashTable[hashCode].count++;
                 }
-                bucket = bucket.next;  // examine next bucket
+                hashTable[hashCode] = hashTable[hashCode].next;  // examine next bucket
             }
 
             // otherwise, possibility #2:
             // it's a new word whose hash code index is populated,
             // aka collision occurrence.
             // chaining / open hashing technique to resolve collisions.
-            bucket = new Bucket(word);
+            Bucket newBucket = new Bucket(word);
             // (Bucket inserted to the front of the linked list)
-            bucket.next = hashTable[hashCode];
-            hashTable[hashCode] = bucket;
+            newBucket.next = hashTable[hashCode];
+            hashTable[hashCode] = newBucket;
             uniqueWordCount++;  // increase count for a new word bucket
 
             return hashTable[hashCode].count;
