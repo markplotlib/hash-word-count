@@ -2,6 +2,7 @@
  * CPSC 5003, Seattle University
  * This is free and unencumbered software released into the public domain.
  * @author mark chesney
+ * @collaborators: Jason Limfueco, Yuqi Wang, Peter Loyd, Ruifeng Wang
  * @version 1.0
  */
 package mchesney_p3;
@@ -98,17 +99,37 @@ public class WordCounter {
         return hashTable[hashCode].count;
     }
     /**
-     * return the current word count for this word
-     * @param word string entered by user
-     * @return   the current word count for this word (0 if empty)
+     * Gets count field of word's bucket
+     * @param word  unique string that delineates this bucket
+     * @return  count field of word's bucket
+     * 			0 when the word entry does not exist in the HashTable.
      */
     public int getWordCount(String word) {
         int hashCode = word.hashCode();
         hashCode = hashCode % capacity;  // asserts: hashCode < capacity
         if (hashCode < 0)
             hashCode += capacity;       // asserts: hashCode > 0
-        return hashTable[hashCode].count;
+
+        // if hash table index is null,
+        // then definitively that word is NOT found in hash table.
+        // so return 0
+        if (hashTable[hashCode] == null) {
+            return 0;
+
+        // if hash table index is NOT null,
+        // then traverse the chain in search of the word
+
+        } else {
+            Bucket bucket = hashTable[hashCode];
+            while (bucket != null) {
+                if (bucket.word.equals(word))   // word IS found!
+                    return bucket.count;
+                bucket = bucket.next;
+            }
+            return 0; // when the word does not exist in the HashTable.
+        }
     }
+
     public void removeWord(String word) {
         int hashCode = word.hashCode();
         hashCode = hashCode % capacity;  // asserts: hashCode < capacity
