@@ -69,35 +69,44 @@ public class WordCounter {
         if (hashCode < 0)
             hashCode += capacity;       // asserts: hashCode > 0
 
-        // if hash table index is null,
-        // then definitively that word is NOT found.
-        // so then create new bucket for this word.
-        if (hashTable[hashCode] == null) {
-            hashTable[hashCode] = new Bucket(word);
+        totalWordCount++;   // This is incremented unconditionally
+
+        Bucket bucket = hashTable[hashCode];
+        // if hash table bucket is null,
+        // then definitively that word is NOT present.
+        // so then CREATE BRAND NEW BUCKET for this word.
+        if (bucket == null) {
+            bucket = new Bucket(word);
+            uniqueWordCount++;  // increase count for a new word bucket
+            return hashTable[hashCode].count;
 
         } else {
-
-            // if hash table index is NOT null,
-            // then: EITHER this is the same word, whereby we
-            // increment total word count AND that word's count.
+            // if hash table bucket is NOT null,
+            // then possibility #1: that this word can be found within.
+            // traverse the chain in search of the word
+            // whereby we increment total word count AND that word's count.
             // Does not insert new nodes when word already exists in HashTable.
-            if (hashTable[hashCode].word.equals(word)) {
-                hashTable[hashCode].count++;
-                totalWordCount++;
-
-            } else {
-                // otherwise, it's a different word with the same hash code,
-                // and collision occurs.
-                // chaining / open hashing technique to resolve collisions.
-                Bucket newBucket = new Bucket(word);
-                // (Bucket inserted to the front of the linked list)
-                newBucket.next = hashTable[hashCode];
-                hashTable[hashCode] = newBucket;
-
+            while (bucket != null) {
+                if (bucket.word.equals(word)) {  // word IS found!
+                    return bucket.count++;
+                }
+                bucket = bucket.next;  // examine next bucket
             }
+
+            // otherwise, possibility #2:
+            // it's a new word whose hash code index is populated,
+            // aka collision occurrence.
+            // chaining / open hashing technique to resolve collisions.
+            bucket = new Bucket(word);
+            // (Bucket inserted to the front of the linked list)
+            bucket.next = hashTable[hashCode];
+            hashTable[hashCode] = bucket;
+            uniqueWordCount++;  // increase count for a new word bucket
+
+            return hashTable[hashCode].count;
         }
-        return hashTable[hashCode].count;
     }
+
     /**
      * Gets count field of word's bucket
      * @param word  unique string that delineates this bucket
@@ -110,13 +119,13 @@ public class WordCounter {
         if (hashCode < 0)
             hashCode += capacity;       // asserts: hashCode > 0
 
-        // if hash table index is null,
+        // if hash table bucket is null,
         // then definitively that word is NOT found in hash table.
         // so return 0
         if (hashTable[hashCode] == null) {
             return 0;
 
-        // if hash table index is NOT null,
+        // if hash table bucket is NOT null,
         // then traverse the chain in search of the word
 
         } else {
