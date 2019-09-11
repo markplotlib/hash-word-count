@@ -57,7 +57,7 @@ public class WordCounter {
     }
 
     /**
-     * 
+     *
      * @param word
      * @return
      */
@@ -65,9 +65,18 @@ public class WordCounter {
         int hashCode = word.hashCode();
         return 0; // FIXME - return the updated word count for this word
     }
+    /**
+     * Gets count field of word's bucket
+     * @param word
+     * @return  count field of word's bucket
+     * 			0 when the word entry does not exist in the HashTable.
+     */
     public int getWordCount(String word) {
         int hashCode = word.hashCode();
-        return 0; // FIXME - return the current word count for this word
+        hashCode = hashCode % capacity;  // asserts: hashCode < capacity
+        if (hashCode < 0)
+            hashCode += capacity;       // asserts: hashCode > 0
+        return hashTable[hashCode].count;
     }
     public void removeWord(String word) {
         int hashCode = word.hashCode();
@@ -75,7 +84,7 @@ public class WordCounter {
     }
 
     /**
-     * 
+     *
      * @author mark chesney
      * @version 1.0
      */
