@@ -2,7 +2,7 @@
  * CPSC 5003, Seattle University
  * This is free and unencumbered software released into the public domain.
  * @author Mark Chesney
- * @collaborators: J Limfueco, Y Wang, P Loyd, R Wang, and S Kim.
+ * @collaborators: J Limfueco, Yuqi Wang, P Loyd, Ruifeng Wang, and Sonyoon Kim.
  * @version 1.0
  */
 package mchesney_p3;
@@ -69,39 +69,32 @@ public class WordCounter {
 
         totalWordCount++;   // This is incremented unconditionally
 
+        // if hash table bucket is NOT null,
+        // then possibility that this word can be found within.
+        // traverse the chain in search of the word
+        // whereby we increment total word count AND that word's count.
+        // Does not insert new nodes when word already exists in HashTable.
+        Bucket bucket = hashTable[key];
+        while (bucket != null) {
+            if (bucket.word.equals(word)) {
+                bucket.count++;
+                return bucket.count;
+            }
+            // advance bucket
+            bucket = bucket.next;
+        }
+
         // if hash table bucket is null,
         // then definitively that word is NOT present.
         // so then CREATE BRAND NEW BUCKET for this word.
-        if (hashTable[key] == null) {
-            hashTable[key] = new Bucket(word);
-            uniqueWordCount++;  // increase count for a new word bucket
-            return hashTable[key].count;
+        Bucket newBucket = new Bucket(word);
+        uniqueWordCount++;
 
-        } else {
-            // if hash table bucket is NOT null,
-            // then possibility #1: that this word can be found within.
-            // traverse the chain in search of the word
-            // whereby we increment total word count AND that word's count.
-            // Does not insert new nodes when word already exists in HashTable.
-            while (hashTable[key] != null) {
-                if (hashTable[key].word.equals(word)) {  // word IS found!
-                    return hashTable[key].count++;
-                }
-                hashTable[key] = hashTable[key].next;  // examine next bucket
-            }
+        newBucket.next = hashTable[key];
+        hashTable[key] = newBucket;
 
-            // otherwise, possibility #2:
-            // it's a new word whose hash code index is populated,
-            // aka collision occurrence.
-            // chaining / open hashing technique to resolve collisions.
-            Bucket newBucket = new Bucket(word);
-            // (Bucket inserted to the front of the linked list)
-            newBucket.next = hashTable[key];
-            hashTable[key] = newBucket;
-            uniqueWordCount++;  // increase count for a new word bucket
-
-            return hashTable[key].count;
-        }
+        // return zero if not found.
+        return hashTable[key].count;
     }
 
     /**
@@ -152,20 +145,28 @@ public class WordCounter {
         Bucket bucket = hashTable[key];
         Bucket prev = bucket;
 
-        while (bucket != null) {
+        // in the event that the first bucket contains the match.
+        if (bucket.word.equals(word)) {
+            hashTable[key] = bucket.next;
+            totalWordCount -= bucket.count;
+            uniqueWordCount--;
+            return;
+        }
 
-            if (bucket.word.equals(word)) {  // word IS found!
-                // decrement total word count AND unique word count
-                uniqueWordCount--;
-                totalWordCount -= bucket.count;
-                // delete the bucket
-                prev.next = bucket.next;
-                bucket.next = null;
-                return;
-            }
-            // advance bucket
+        // iterate while there's another bucket and word hasn't been found
+        while (bucket.next != null && !bucket.word.equals(word)) {
             prev = bucket;
             bucket = bucket.next;
+        }
+
+        if (bucket.word.equals(word)) {  // word IS found!
+            // delete the bucket
+            prev.next = bucket.next;
+            bucket.next = null;
+            // decrement total word count AND unique word count
+            uniqueWordCount--;
+            totalWordCount -= bucket.count;
+            return;
         }
     }
 
