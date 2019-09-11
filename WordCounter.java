@@ -84,18 +84,19 @@ public class WordCounter {
             return 0;
 
         // if hash table index is NOT null,
-        // it's still possible that this word is NOT found in hash table.
-        // in the event that it's a different word with the same hash code.
-        // This indicates a collision has occurred.
-        // then definitively that word is NOT found in hash table.
-        // so return 0
-        } else if (!hashTable[hashCode].word.equals(word)) {
-            return 0;
+        // then traverse the chain in search of the word
+
+        } else {
+            Bucket bucket = hashTable[hashCode];
+            while (bucket != null) {
+                if (bucket.word.equals(word))   // word IS found!
+                    return bucket.count;
+                bucket = bucket.next;
+            }
+            return 0; // when the word does not exist in the HashTable.
         }
-
-
-
     }
+
     public void removeWord(String word) {
         int hashCode = word.hashCode();
         // FIXME - remove word from hash table
