@@ -93,7 +93,6 @@ public class WordCounter {
         newBucket.next = hashTable[key];
         hashTable[key] = newBucket;
 
-        // return zero if not found.
         return hashTable[key].count;
     }
 
