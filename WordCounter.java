@@ -76,7 +76,25 @@ public class WordCounter {
         hashCode = hashCode % capacity;  // asserts: hashCode < capacity
         if (hashCode < 0)
             hashCode += capacity;       // asserts: hashCode > 0
-        return hashTable[hashCode].count;
+
+        // if hash table index is null,
+        // then definitively that word is NOT found in hash table.
+        // so return 0
+        if (hashTable[hashCode] == null) {
+            return 0;
+
+        // if hash table index is NOT null,
+        // it's still possible that this word is NOT found in hash table.
+        // in the event that it's a different word with the same hash code.
+        // This indicates a collision has occurred.
+        // then definitively that word is NOT found in hash table.
+        // so return 0
+        } else if (!hashTable[hashCode].word.equals(word)) {
+            return 0;
+        }
+
+
+
     }
     public void removeWord(String word) {
         int hashCode = word.hashCode();
