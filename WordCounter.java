@@ -1,8 +1,8 @@
 /*
  * CPSC 5003, Seattle University
  * This is free and unencumbered software released into the public domain.
- * @author mark chesney
- * @collaborators: Jason Limfueco, Yuqi Wang, Peter Loyd, Ruifeng Wang
+ * @author Mark Chesney
+ * @collaborators: J Limfueco, Y Wang, P Loyd, R Wang, and S Kim.
  * @version 1.0
  */
 package mchesney_p3;
@@ -65,19 +65,17 @@ public class WordCounter {
      */
     public int incrementWordCount(String word) {
         int hashCode = word.hashCode();
-        hashCode = hashCode % capacity;  // asserts: hashCode < capacity
-        if (hashCode < 0)
-            hashCode += capacity;       // asserts: hashCode > 0
+        int key = mapCodeToIndex(hashCode);
 
         totalWordCount++;   // This is incremented unconditionally
 
         // if hash table bucket is null,
         // then definitively that word is NOT present.
         // so then CREATE BRAND NEW BUCKET for this word.
-        if (hashTable[hashCode] == null) {
-            hashTable[hashCode] = new Bucket(word);
+        if (hashTable[key] == null) {
+            hashTable[key] = new Bucket(word);
             uniqueWordCount++;  // increase count for a new word bucket
-            return hashTable[hashCode].count;
+            return hashTable[key].count;
 
         } else {
             // if hash table bucket is NOT null,
@@ -85,11 +83,11 @@ public class WordCounter {
             // traverse the chain in search of the word
             // whereby we increment total word count AND that word's count.
             // Does not insert new nodes when word already exists in HashTable.
-            while (hashTable[hashCode] != null) {
-                if (hashTable[hashCode].word.equals(word)) {  // word IS found!
-                    return hashTable[hashCode].count++;
+            while (hashTable[key] != null) {
+                if (hashTable[key].word.equals(word)) {  // word IS found!
+                    return hashTable[key].count++;
                 }
-                hashTable[hashCode] = hashTable[hashCode].next;  // examine next bucket
+                hashTable[key] = hashTable[key].next;  // examine next bucket
             }
 
             // otherwise, possibility #2:
@@ -98,11 +96,11 @@ public class WordCounter {
             // chaining / open hashing technique to resolve collisions.
             Bucket newBucket = new Bucket(word);
             // (Bucket inserted to the front of the linked list)
-            newBucket.next = hashTable[hashCode];
-            hashTable[hashCode] = newBucket;
+            newBucket.next = hashTable[key];
+            hashTable[key] = newBucket;
             uniqueWordCount++;  // increase count for a new word bucket
 
-            return hashTable[hashCode].count;
+            return hashTable[key].count;
         }
     }
 
@@ -114,21 +112,19 @@ public class WordCounter {
      */
     public int getWordCount(String word) {
         int hashCode = word.hashCode();
-        hashCode = hashCode % capacity;  // asserts: hashCode < capacity
-        if (hashCode < 0)
-            hashCode += capacity;       // asserts: hashCode > 0
+        int key = mapCodeToIndex(hashCode);
 
         // if hash table bucket is null,
         // then definitively that word is NOT found in hash table.
         // so return 0
-        if (hashTable[hashCode] == null) {
+        if (hashTable[key] == null) {
             return 0;
 
         // if hash table bucket is NOT null,
         // then traverse the chain in search of the word
 
         } else {
-            Bucket bucket = hashTable[hashCode];
+            Bucket bucket = hashTable[key];
             while (bucket != null) {
                 if (bucket.word.equals(word))   // word IS found!
                     return bucket.count;
@@ -138,19 +134,50 @@ public class WordCounter {
         }
     }
 
+    /**
+     * completely remove word entry from the hash table.
+     * @param word  target word
+     */
     public void removeWord(String word) {
         int hashCode = word.hashCode();
-        hashCode = hashCode % capacity;  // asserts: hashCode < capacity
-        if (hashCode < 0)
-            hashCode += capacity;       // asserts: hashCode > 0
-//        hashTable[hashCode];
-        // FIXME - remove word from hash table
+        int key = mapCodeToIndex(hashCode);
+
+        // if hash table bucket is null, then that word is NOT present.
+        // take no action.
+        if (hashTable[key] == null)
+            return;
+
+        // if hash table bucket is NOT null,
+        // then traverse the chain in search of the word
+        Bucket bucket = hashTable[key];
+        Bucket prev = bucket;
+
+        while (bucket != null) {
+
+            if (bucket.word.equals(word)) {  // word IS found!
+                // decrement total word count AND unique word count
+                uniqueWordCount--;
+                totalWordCount -= bucket.count;
+                // delete the bucket
+                prev.next = bucket.next;
+                bucket.next = null;
+                return;
+            }
+            // advance bucket
+            prev = bucket;
+            bucket = bucket.next;
+        }
+    }
+
+    private int mapCodeToIndex(int code) {
+        code = code % capacity;  // asserts: code < capacity
+        if (code < 0)
+            code += capacity;       // asserts: code > 0
+        return code;
     }
 
     /**
-     *
-     * @author mark chesney
-     * @version 1.0
+     * Bucket for word counting, one for each unique word.
      */
     private static class Bucket {
         public String word;
